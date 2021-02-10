@@ -1,0 +1,79 @@
+<USE MACROFILE="macros_doi.html" />
+<?php
+    header("Content-type: application/xml");
+    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+?>
+<IF COND="[#DOWNLOAD]">
+<?php
+    $base =  $context['options']['nova']['prefixedoi'] ?: $context['doi']['prefix'];
+    $prefix = strtok($base,'/');    
+    $filename = $prefix.'-'.$context['site'].'-'.$context['id'].'.xml';
+    header("Content-Disposition: attachment;filename=$filename");
+?>
+</IF>
+<doi_batch version="4.4.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.crossref.org/schema/4.4.2" xsi:schemaLocation="http://www.crossref.org/schema/4.4.2  http://www.crossref.org/schemas/crossref4.4.2.xsd" xmlns:jats="http://www.ncbi.nlm.nih.gov/JATS1">
+    <head>
+        <doi_batch_id>[#SITE]<?php echo date('YmdHis')?></doi_batch_id>
+        <timestamp><?php echo date('YmdHis')?></timestamp>
+        <depositor>
+            <depositor_name>[#DOI.DEPOSITOR]</depositor_name>
+            <email_address>[#DOI.EMAIL]</email_address>
+        </depositor>
+        <registrant>[%SITEINFOS.TITLE|textebrut]</registrant>
+    </head>
+    <journal>
+        <journal_metadata language="fr">
+            <full_title>[%SITEINFOS.TITLE|textebrut]</full_title>
+            <IF COND="[#OPTIONS.EXTRA.ALTERTITRESITE1]"><full_title>[#OPTIONS.EXTRA.ALTERTITRESITE1]</full_title></IF>
+            <IF COND="[#OPTIONS.EXTRA.ALTERTITRESITE2]"><full_title>[#OPTIONS.EXTRA.ALTERTITRESITE2]</full_title></IF>
+            <IF COND="[#OPTIONS.METADONNEESSITE.TITRESITEABREGE]"><abbrev_title>[#OPTIONS.METADONNEESSITE.TITRESITEABREGE|textebrut]</abbrev_title></IF>
+            <IF COND="[#OPTIONS.METADONNEESSITE.ISSN_ELECTRONIQUE] LIKE /\d{4}-?\d{3}[xX\d]/">
+              <issn media_type="electronic">[#OPTIONS.METADONNEESSITE.ISSN_ELECTRONIQUE]</issn>
+            </IF>
+            <IF COND="[#OPTIONS.METADONNEESSITE.ISSN] LIKE /\d{4}-?\d{3}[xX\d]/">
+              <issn media_type="print">[#OPTIONS.METADONNEESSITE.ISSN]</issn>
+            </IF>
+            <doi_data>
+                <IF COND="[#OPTIONS.EXTRA.DOI_PREFIXE]"><doi>[#OPTIONS.EXTRA.DOI_PREFIXE|substr(0,-1)]</doi><ELSE/><doi>[#DOI.PREFIX|substr(0,1)]</doi></IF>
+                <resource>[%SITEURL]</resource>
+            </doi_data>
+        </journal_metadata>
+        <IF COND="[#TYPE] eq 'numero'">
+            <LOOP NAME="getIssueDataThroughIssueId"
+                  SELECT="identity as issue_id,titre as issue_titre,altertitre as issue_altertitre,soustitre as issue_soustitre,numero as issue_numero,status,
+                  publications.datepublipapier as issue_datepublipapier, publications.datepubli as issue_datepubli, publications.datemisenligne as issue_datemisenligne"
+                  TABLE="publications,entities" WHERE="publications.identity=entities.id AND identity=[#ID]">
+            <DO>
+            <MACRO NAME="JOURNAL_ISSUE" />
+            </DO>
+            </LOOP> 
+            <LOOP NAME="getChildrenTextData"
+             SELECT="textes.identity as texte_id,textes.titre,textes.altertitre,textes.soustitre,textes.langue,resume,pagination,textes.datepubli,textes.datepublipapier,textes.datemisenligne"
+             TABLE="textes,entities,relations,publications,types" 
+             WHERE="textes.identity=entities.id AND entities.id=relations.id2 AND relations.id1=publications.identity AND entities.idtype=types.id" 
+             WHERE="publications.identity='[#ID]' AND nature='P' AND types.type in ([#DOI.HARVESTEDTYPES])">
+            <DO> 
+                <MACRO NAME="JOURNAL_ARTICLE" />
+            </DO>
+            </LOOP>
+        <ELSE/>
+            <LOOP NAME="getIssueDataThroughTextId"
+                  SELECT="identity as issue_id,titre as issue_titre,altertitre as issue_altertitre,soustitre as issue_soustitre,numero as issue_numero,entities.status"
+                  TABLE="relations,entities,publications,types" 
+                  WHERE="entities.id=relations.id1 AND entities.id=publications.identity AND entities.idtype=types.id"
+                  WHERE="relations.id2=[#ID] AND types.type='numero'">
+            <DO>
+            <MACRO NAME="JOURNAL_ISSUE" />
+            </DO>
+            </LOOP>
+            <LOOP NAME="getTextData"
+             SELECT="identity as texte_id,titre,soustitre,langue,altertitre,resume,pagination,datepubli,datepublipapier,datemisenligne"
+             TABLE="textes" 
+             WHERE="identity=[#ID]">
+            <DO> 
+            <MACRO NAME="JOURNAL_ARTICLE" />
+            </DO>
+            </LOOP>
+        </IF>
+    </journal>
+</doi_batch>

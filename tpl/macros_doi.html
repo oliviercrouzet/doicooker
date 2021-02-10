@@ -1,0 +1,96 @@
+<CONTENT VERSION="1.0" LANG="fr" CHARSET="utf-8"/>
+
+<DEFMACRO NAME="JOURNAL_ISSUE">
+        <journal_issue>
+            <titles>
+                <title>[#ISSUE_TITRE|textebrut]</title>
+                <IF COND="[#ISSUE_ALTERTITRE]"><title>[#ISSUE_ALTERTITRE|textebrut]</title></IF>
+                <IF COND="[#ISSUE_SOUSTITRE]"><subtitle>[#ISSUE_SOUSTITRE|textebrut]</subtitle></IF>
+            </titles>
+            <LET VAR="onlinedate"><IF COND="[#ISSUE_DATEPUBLI]">[#ISSUE_DATEPUBLI]<ELSE/>[#ISSUE_DATEMISENLIGNE]</IF></LET>
+            <FUNC NAME="PUBLIDATE" DATE="[#ONLINEDATE]" MEDIUM="online" />
+            <IF COND="[#ISSUE_DATEPUBLIPAPIER]  AND [#ISSUE_DATEPUBLIPAPIER] NE '0000-00-00' AND [#ISSUE_DATEPUBLIPAPIER] NE NULL">
+                <FUNC NAME="PUBLIDATE" DATE="[#ISSUE_DATEPUBLIPAPIER]" MEDIUM="print" />
+            </IF>
+            <LET VAR="publishingmode">
+                <LOOP NAME="getIdentifier" SELECT="identifier" TABLE="relations,entities" 
+                    WHERE="relations.id1=entities.id AND relations.id2=[#ISSUE_ID] AND nature='P' AND degree='1'">[#IDENTIFIER]</LOOP>
+            </LET>
+            <IF COND="[#PUBLISHINGMODE] LIKE /specia.?|hors-serie/">
+                <special_numbering>[#ISSUE_NUMERO]</special_numbering>
+            <ELSE/>
+                <issue>[#ISSUE_NUMERO]</issue>
+            </IF>
+            <doi_data>
+                <IF COND="[#OPTIONS.EXTRA.DOI_PREFIXE]"><doi>[#OPTIONS.EXTRA.DOI_PREFIXE][#ISSUE_ID]</doi><ELSE/><doi>[#DOI.PREFIX][#ISSUE_ID]</doi></IF>
+                <resource>[%SITEURL]/index.php?id=[#ISSUE_ID]</resource>
+            </doi_data>
+        </journal_issue>
+</DEFMACRO>
+<DEFMACRO NAME="JOURNAL_ARTICLE">
+    <LET VAR="authored"><LOOP NAME="checkAuthors" TABLE="auteurs" SELECT="nomfamille,prenom" WHERE="iddocument='[#TEXTE_ID]'" ORDER="degree">
+    [#NBRESULTS]</LOOP></LET>
+    <IF COND="[#AUTHORED]">
+        <journal_article publication_type="full_text" language="[#LANGUE]">
+            <IF COND="[#ALTERTITRE] LIKE /<r2r:ml lang=\"([a-z]+)\"/">
+                <LOOP NAME="foreach" ARRAY="[#MATCHES.1]">
+                <titles>
+                    <title>[#ALTERTITRE:#VALUE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</title>
+                    <original_language_title language="[#LANGUE]">[#TITRE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</original_language_title>
+                    <IF COND="[#SOUSTITRE]"><subtitle>[#SOUSTITRE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</subtitle></IF>
+                </titles>
+                </LOOP>
+            <ELSE/>
+                <titles>
+                    <title>[#TITRE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</title>
+                    <IF COND="[#SOUSTITRE]"><subtitle>[#SOUSTITRE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</subtitle></IF>
+                </titles>
+            </IF>
+            <contributors>
+                <LOOP NAME="getAuthors" TABLE="auteurs" SELECT="nomfamille,prenom" WHERE="iddocument='[#TEXTE_ID]'" ORDER="degree">
+                <DO>
+                    <person_name sequence="first" contributor_role="author">
+                        <given_name>[#PRENOM]</given_name>
+                        <surname>[#NOMFAMILLE]</surname>
+                    </person_name>
+                 </DO>
+                 </LOOP>
+            </contributors>
+                <IF COND="[#RESUME] LIKE /<r2r:ml lang=\"([a-z]+)\"/">
+                    <LOOP NAME="foreach" ARRAY="[#MATCHES.1]">
+                    <jats:abstract xml:lang="[#VALUE]"><jats:p>[#RESUME:#VALUE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</jats:p></jats:abstract>
+                    </LOOP>
+                </IF>
+                <LET VAR="onlinedate"><IF COND="[#DATEPUBLI]">[#DATEPUBLI]<ELSE/>[#DATEMISENLIGNE]</IF></LET>
+                <FUNC NAME="PUBLIDATE" DATE="[#ONLINEDATE]" MEDIUM="online"/>
+                <IF COND="[#DATEPUBLIPAPIER] AND [#DATEPUBLIPAPIER] NE '0000-00-00' AND [#DATEPUBLIPAPIER] NE NULL">
+                   <FUNC NAME="PUBLIDATE" DATE="[#DATEPUBLIPAPIER]" MEDIUM="print" />
+                </IF>
+                <IF COND="[#PAGINATION]">
+                    <LET ARRAY="pages">[#PAGINATION|lexplode('-')]</LET>
+                    <pages>
+                        <first_page>[#PAGES.0]</first_page>
+                        <IF COND="[#PAGES.1]"><last_page>[#PAGES.1]</last_page></IF>
+                    </pages>
+                </IF>
+                <doi_data>
+                    <IF COND="[#OPTIONS.EXTRA.DOI_PREFIXE]"><doi>[#OPTIONS.EXTRA.DOI_PREFIXE][#TEXTE_ID]</doi><ELSE/><doi>[#DOI.PREFIX][#TEXTE_ID]</doi></IF>
+                    <resource>[%SITEURL]/index.php?id=[#TEXTE_ID]</resource>
+                </doi_data>
+            </journal_article>
+    </IF>
+</DEFMACRO>
+
+<DEFFUNC NAME="PUBLIDATE" OPTIONAL="date" REQUIRED="medium" >
+    <publication_date media_type="[#MEDIUM]">
+        <IF COND="[#DATE] AND [#DATE] NE '0000-00-00' AND [#DATE] NE NULL">
+             <LET ARRAY="DATEPARTS">[#DATE|lexplode('-')]</LET>
+        <ELSE/>
+            <LET VAR="DATE"><?php echo date("Y-m-d");?></LET>
+            <LET ARRAY="DATEPARTS">[#DATE|lexplode('-')]</LET>
+        </IF>
+        <month>[#DATEPARTS.1]</month>
+        <day>[#DATEPARTS.2]</day>
+        <year>[#DATEPARTS.0]</year>
+    </publication_date>
+</DEFFUNC>
