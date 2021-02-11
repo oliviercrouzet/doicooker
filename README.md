@@ -1,6 +1,8 @@
-# Plugin Lodel Doicooker
+# Plugin DOIcooker pour Lodel
 Ce plugin permet de produire un fichier de dépot de DOI au format XML à destination de l'organisme CROSSREF. Ce fichier peut être créé pour déclarer un numéro de revue complet ou pour un article isolé. Il est possible de choisir dans les paramètres le type d'entité que l'on souhaite moissonner (article, compte-rendu, etc.). Par défaut, seuls les articles le sont.
 
+## Prérequis
+- Lodel 1.0
 ## Installation
 Dans le répertoire `share/plugins/custom/` de votre installation, dézippez l'archive du plugin ou clonez le dépôt :
 ```
