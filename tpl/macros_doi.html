@@ -2,11 +2,7 @@
 
 <DEFMACRO NAME="JOURNAL_ISSUE">
         <journal_issue>
-            <titles>
-                <title>[#ISSUE_TITRE|textebrut]</title>
-                <IF COND="[#ISSUE_ALTERTITRE]"><title>[#ISSUE_ALTERTITRE|textebrut]</title></IF>
-                <IF COND="[#ISSUE_SOUSTITRE]"><subtitle>[#ISSUE_SOUSTITRE|textebrut]</subtitle></IF>
-            </titles>
+            <FUNC NAME="TITLES" TITLE="[#ISSUE_TITRE]" SUBTITLE="[#ISSUE_SOUSTITRE]" ALTERTITLE="[#ISSUE_ALTERTITRE]" />
             <LET VAR="onlinedate"><IF COND="[#ISSUE_DATEPUBLI]">[#ISSUE_DATEPUBLI]<ELSE/>[#ISSUE_DATEMISENLIGNE]</IF></LET>
             <FUNC NAME="PUBLIDATE" DATE="[#ONLINEDATE]" MEDIUM="online" />
             <IF COND="[#ISSUE_DATEPUBLIPAPIER]  AND [#ISSUE_DATEPUBLIPAPIER] NE '0000-00-00' AND [#ISSUE_DATEPUBLIPAPIER] NE NULL">
@@ -32,20 +28,7 @@
     [#NBRESULTS]</LOOP></LET>
     <IF COND="[#AUTHORED]">
         <journal_article publication_type="full_text" language="[#LANGUE]">
-            <IF COND="[#ALTERTITRE] LIKE /<r2r:ml lang=\"([a-z]+)\"/">
-                <LOOP NAME="foreach" ARRAY="[#MATCHES.1]">
-                <titles>
-                    <title>[#ALTERTITRE:#VALUE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</title>
-                    <original_language_title language="[#LANGUE]">[#TITRE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</original_language_title>
-                    <IF COND="[#SOUSTITRE]"><subtitle>[#SOUSTITRE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</subtitle></IF>
-                </titles>
-                </LOOP>
-            <ELSE/>
-                <titles>
-                    <title>[#TITRE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</title>
-                    <IF COND="[#SOUSTITRE]"><subtitle>[#SOUSTITRE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</subtitle></IF>
-                </titles>
-            </IF>
+            <FUNC NAME="TITLES" TITLE="[#TITRE]" SUBTITLE="[#SOUSTITRE]" ALTERTITLE="[#ALTERTITRE]" />
             <contributors>
                 <LOOP NAME="getAuthors" TABLE="auteurs" SELECT="nomfamille,prenom" WHERE="iddocument='[#TEXTE_ID]'" ORDER="degree">
                 <DO>
@@ -93,4 +76,21 @@
         <day>[#DATEPARTS.2]</day>
         <year>[#DATEPARTS.0]</year>
     </publication_date>
+</DEFFUNC>
+
+<DEFFUNC NAME="TITLES" REQUIRED="title" OPTIONAL="subtitle, altertitle">
+    <IF COND="[#ALTERTITLE] LIKE /<r2r:ml lang=\"([a-z]+)\"/">
+        <LOOP NAME="foreach" ARRAY="[#MATCHES.1]">
+          <titles>
+            <title>[#ALTERTITLE:#VALUE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</title>
+            <original_language_title language="[#LANGUE]">[#TITLE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</original_language_title>
+            <IF COND="[#SUBTITLE]"><subtitle>[#SUBTITLE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</subtitle></IF>
+          </titles>
+        </LOOP>
+    <ELSE/>
+        <titles>
+            <title>[#TITLE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</title>
+            <IF COND="[#SUBTITLE]"><subtitle>[#SUBTITLE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</subtitle></IF>
+        </titles>
+    </IF>
 </DEFFUNC>
