@@ -81,7 +81,7 @@
     </IF>
 </DEFMACRO>
 
-<DEFFUNC NAME="PUBLIDATE" OPTIONAL="date" REQUIRED="medium" >
+<DEFFUNC NAME="PUBLIDATE" REQUIRED="medium" OPTIONAL="date">
     <publication_date media_type="[#MEDIUM]">
         <IF COND="[#DATE] AND [#DATE] NE '0000-00-00' AND [#DATE] NE NULL">
              <LET ARRAY="DATEPARTS">[#DATE|lexplode('-')]</LET>
