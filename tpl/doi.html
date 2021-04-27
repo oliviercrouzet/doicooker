@@ -26,7 +26,7 @@
             <full_title>[%SITEINFOS.TITLE|textebrut]</full_title>
             <IF COND="[#OPTIONS.EXTRA.ALTERTITRESITE1]"><full_title>[#OPTIONS.EXTRA.ALTERTITRESITE1]</full_title></IF>
             <IF COND="[#OPTIONS.EXTRA.ALTERTITRESITE2]"><full_title>[#OPTIONS.EXTRA.ALTERTITRESITE2]</full_title></IF>
-            <IF COND="[#OPTIONS.METADONNEESSITE.TITRESITEABREGE]"><abbrev_title>[#OPTIONS.METADONNEESSITE.TITRESITEABREGE|textebrut]</abbrev_title></IF>
+            <IF COND="[#OPTIONS.METADONNEESSITE.TITRESITEABREGE] AND ![#OPTIONS.METADONNEESSITE.TITRESITEABREGE] LIKE /^Titre abr.g. du site$/"><abbrev_title>[#OPTIONS.METADONNEESSITE.TITRESITEABREGE|textebrut]</abbrev_title></IF>
             <IF COND="[#OPTIONS.METADONNEESSITE.ISSN_ELECTRONIQUE] LIKE /\d{4}-?\d{3}[xX\d]/">
               <issn media_type="electronic">[#OPTIONS.METADONNEESSITE.ISSN_ELECTRONIQUE]</issn>
             </IF>
