@@ -19,11 +19,11 @@
             <depositor_name>[#DOI.DEPOSITOR]</depositor_name>
             <email_address>[#DOI.EMAIL]</email_address>
         </depositor>
-        <registrant>[%SITEINFOS.TITLE|textebrut]</registrant>
+        <registrant>[#OPTIONS.METADONNEESSITE.TITRESITE|textebrut]</registrant>
     </head>
     <journal>
         <journal_metadata language="fr">
-            <full_title>[%SITEINFOS.TITLE|textebrut]</full_title>
+            <full_title>[#OPTIONS.METADONNEESSITE.TITRESITE|textebrut]</full_title>
             <IF COND="[#OPTIONS.EXTRA.ALTERTITRESITE1]"><full_title>[#OPTIONS.EXTRA.ALTERTITRESITE1]</full_title></IF>
             <IF COND="[#OPTIONS.EXTRA.ALTERTITRESITE2]"><full_title>[#OPTIONS.EXTRA.ALTERTITRESITE2]</full_title></IF>
             <IF COND="[#OPTIONS.METADONNEESSITE.TITRESITEABREGE] AND ![#OPTIONS.METADONNEESSITE.TITRESITEABREGE] LIKE /^Titre abr.g. du site$/"><abbrev_title>[#OPTIONS.METADONNEESSITE.TITRESITEABREGE|textebrut]</abbrev_title></IF>
