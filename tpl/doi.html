@@ -40,7 +40,7 @@
         </journal_metadata>
         <IF COND="[#TYPE] eq 'numero'">
             <LOOP NAME="getIssueDataThroughIssueId"
-                  SELECT="identity as issue_id,titre as issue_titre,altertitre as issue_altertitre,soustitre as issue_soustitre,numero as issue_numero,status,
+                  SELECT="identity as issue_id,titre as issue_titre,altertitre as issue_altertitre,soustitre as issue_soustitre,langue,numero as issue_numero,status,
                   publications.datepublipapier as issue_datepublipapier, publications.datepubli as issue_datepubli, publications.datemisenligne as issue_datemisenligne"
                   TABLE="publications,entities" WHERE="publications.identity=entities.id AND identity=[#ID]">
             <DO>
@@ -58,7 +58,7 @@
             </LOOP>
         <ELSE/>
             <LOOP NAME="getIssueDataThroughTextId"
-                  SELECT="identity as issue_id,titre as issue_titre,altertitre as issue_altertitre,soustitre as issue_soustitre,numero as issue_numero,entities.status"
+                  SELECT="identity as issue_id,titre as issue_titre,altertitre as issue_altertitre,soustitre as issue_soustitre,langue,numero as issue_numero,entities.status"
                   TABLE="relations,entities,publications,types" 
                   WHERE="entities.id=relations.id1 AND entities.id=publications.identity AND entities.idtype=types.id"
                   WHERE="relations.id2=[#ID] AND types.type='numero'">
