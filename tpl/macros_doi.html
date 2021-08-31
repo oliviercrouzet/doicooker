@@ -2,7 +2,7 @@
 
 <DEFMACRO NAME="JOURNAL_ISSUE">
         <journal_issue>
-            <FUNC NAME="TITLES" TITLE="[#ISSUE_TITRE]" SUBTITLE="[#ISSUE_SOUSTITRE]" ALTERTITLE="[#ISSUE_ALTERTITRE]" />
+            <FUNC NAME="TITLES" TITLE="[#ISSUE_TITRE]" ENTID="[TEXTE_ID]" SUBTITLE="[#ISSUE_SOUSTITRE]" ALTERTITLE="[#ISSUE_ALTERTITRE]"/>
             <LET VAR="onlinedate"><IF COND="[#ISSUE_DATEPUBLI]">[#ISSUE_DATEPUBLI]<ELSE/>[#ISSUE_DATEMISENLIGNE]</IF></LET>
             <FUNC NAME="PUBLIDATE" DATE="[#ONLINEDATE]" MEDIUM="online" />
             <IF COND="[#ISSUE_DATEPUBLIPAPIER]  AND [#ISSUE_DATEPUBLIPAPIER] NE '0000-00-00' AND [#ISSUE_DATEPUBLIPAPIER] NE NULL">
@@ -28,7 +28,7 @@
     [#NBRESULTS]</LOOP></LET>
     <IF COND="[#AUTHORED]">
         <journal_article publication_type="full_text" language="[#LANGUE]">
-            <FUNC NAME="TITLES" TITLE="[#TITRE]" SUBTITLE="[#SOUSTITRE]" ALTERTITLE="[#ALTERTITRE]" />
+                <FUNC NAME="TITLES" TITLE="[#TITRE]" ENTID="[TEXTE_ID]" SUBTITLE="[#SOUSTITRE]" ALTERTITLE="[#ALTERTITRE]" />
             <contributors>
                 <LOOP NAME="getAuthors" TABLE="auteurs" SELECT="nomfamille,prenom" WHERE="iddocument='[#TEXTE_ID]'" ORDER="degree">
                 <DO>
@@ -63,7 +63,6 @@
             </journal_article>
     </IF>
 </DEFMACRO>
-
 <DEFFUNC NAME="PUBLIDATE" REQUIRED="medium" OPTIONAL="date">
     <publication_date media_type="[#MEDIUM]">
         <IF COND="[#DATE] AND [#DATE] NE '0000-00-00' AND [#DATE] NE NULL">
@@ -77,20 +76,67 @@
         <year>[#DATEPARTS.0]</year>
     </publication_date>
 </DEFFUNC>
-
-<DEFFUNC NAME="TITLES" REQUIRED="title" OPTIONAL="subtitle, altertitle">
-    <IF COND="[#ALTERTITLE] LIKE /<r2r:ml lang=\"([a-z]+)\"/">
-        <LOOP NAME="foreach" ARRAY="[#MATCHES.1]">
-          <titles>
-            <title>[#ALTERTITLE:#VALUE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</title>
-            <original_language_title language="[#LANGUE]">[#TITLE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</original_language_title>
-            <IF COND="[#SUBTITLE]"><subtitle>[#SUBTITLE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</subtitle></IF>
-          </titles>
-        </LOOP>
-    <ELSE/>
-        <titles>
+<DEFFUNC NAME="TITLES" REQUIRED="title, entid" OPTIONAL="subtitle, altertitle">
+    <IF COND="![#ALTERTITLE]"/>
+        <MACRO NAME="REFERENCE_TITLE" />
+    <ELSEIF COND="[#ALTERTITLE] LIKE /<r2r:ml lang=\"([a-z]+)\"/">
+        <LET VAR="istranslation"><LOOP NAME="istranslation" TABLE="relations" WHERE="id1='[#ENTID]' AND nature='traduction' and degree=0">
+          [#NBRESULTS]</LOOP></LET>
+        <IF COND="[#ISTRANSLATION]"/>
+            <titles>
             <title>[#TITLE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</title>
-            <IF COND="[#SUBTITLE]"><subtitle>[#SUBTITLE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</subtitle></IF>
-        </titles>
+            <IF COND="[#SUBTITLE]"/><subtitle>[#SUBTITLE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</subtitle></IF>
+            <LOOP NAME="foreach" ARRAY="[#MATCHES.1]">
+                <FUNC NAME="PROCESS_TITLE_AS_TRANSLATION" ALTERVAL="[#ALTERTITLE:#VALUE]" ALTERLANGUE="[#MATCHES.1.0]"/>
+            </LOOP>
+            </titles>
+        <ELSE />
+            <MACRO NAME="REFERENCE_TITLE" />
+            <IF COND="[#TYPE] ne 'numero'">
+              <LOOP NAME="foreach" ARRAY="[#MATCHES.1]">
+                <FUNC NAME="PROCESS_TITLE_AS_VARIANT" ALTERVAL="[#ALTERTITLE:#VALUE]"/>
+              </LOOP>
+            </IF>
+        </IF>
     </IF>
 </DEFFUNC>
+<DEFMACRO NAME="REFERENCE_TITLE">
+    <titles>
+        <title>[#TITLE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</title>
+        <IF COND="[#SUBTITLE]"/><subtitle>[#SUBTITLE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</subtitle></IF>
+    </titles>
+</DEFMACRO>
+<DEFFUNC NAME="PROCESS_TITLE_AS_TRANSLATION" REQUIRED="alterval, alterlangue">
+    <IF COND="[#SUBTITLE] AND [#GUESS_ALTER_SUBTITLE]"/>
+        <FUNC NAME="SPLIT_TITLE" ALTERVAL="[#ALTERVAL]" ALTERLANGUE="[#ALTERLANGUE]"/>
+    <ELSE />
+        <original_language_title language="[#ALTERLANGUE]">[#ALTERVAL|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</original_language_title>
+    </IF>
+</DEFFUNC>
+<DEFFUNC NAME="PROCESS_TITLE_AS_VARIANT" REQUIRED="alterval">
+    <titles>
+    <IF COND="[#SUBTITLE] AND [#GUESS_ALTER_SUBTITLE]"/>
+        <FUNC NAME="SPLIT_TITLE" ALTERVAL="[#ALTERVAL]"/>
+    <ELSE />
+        <title>[#ALTERVAL|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</title>
+    </IF>
+    </titles>
+</DEFFUNC>
+<DEFFUNC NAME="SPLIT_TITLE" REQUIRED="alterval" OPTIONAL="alterlangue">
+    <LET ARRAY="split_title">[#ALTERVAL|removenotes|textebrut|cleanBadChars|replacequotationmark|trim|lreg_split("/[.:]/",2)]</LET>
+    <IF COND="[#SPLIT_TITLE.1]"/>
+        <IF COND="[#ALTERLANGUE]"/>
+            <original_language_title language="[#ALTERLANGUE]">[#SPLIT_TITLE.0|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</original_language_title>
+        <ELSE />
+            <title>[#SPLIT_TITLE.0|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</title>
+        </IF>
+        <subtitle>[#SPLIT_TITLE.1|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</subtitle>
+    <ELSE />
+        <IF COND="[#ALTERLANGUE]"/>
+            <original_language_title language="[#ALTERLANGUE]">[#ALTERVAL|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</original_language_title>
+        <ELSE />
+            <title>[#ALTERVAL|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</title>
+        </IF>
+   </IF>
+</DEFFUNC>
+
