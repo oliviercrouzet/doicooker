@@ -35,7 +35,7 @@
               <issn media_type="print">[#OPTIONS.METADONNEESSITE.ISSN]</issn>
             </IF>
             <doi_data>
-                <IF COND="[#OPTIONS.EXTRA.DOI_PREFIXE]"><doi>[#OPTIONS.EXTRA.DOI_PREFIXE|substr(0,-1)]</doi><ELSE/><doi>[#DOI.PREFIX|substr(0,-1)]</doi></IF>
+                <doi>[#DOI.PREFIX|substr(0,-1)]</doi>
                 <resource>[%SITEURL]</resource>
             </doi_data>
         </journal_metadata>

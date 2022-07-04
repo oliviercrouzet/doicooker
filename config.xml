@@ -9,7 +9,7 @@
 
         <param name="authorized_tags" title="Balises HTML autorisées" type="text" defaultValue="em,strong,h1,h2,h3,sup,span,a" allowedValues="" required="true"/>
         <param name="userrights" title="Droits utilisateurs" type="select" allowedValues="20,30,40,128" defaultValue="128" required="true"/>
-        <param name="prefix" title="base du DOI" type="text" allowedValues="" defaultValue="" required="false"/>
+        <param name="prefix" title="Préfixe du DOI" type="text" allowedValues="" defaultValue="" required="true"/>
         <param name="depositor" title="Editeur institutionnel (Depositor)" type="text" allowedValues="" defaultValue="" required="true"/>
         <param name="email" title="Email" type="text" allowedValues="" defaultValue="" required="true"/>
         <param name="harvestedtypes" title="Type de texte à moissonner (séparateur = virgule)" type="text" allowedValues="" defaultValue="article" required="true"/>
