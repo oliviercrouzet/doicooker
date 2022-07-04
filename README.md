@@ -2,7 +2,7 @@
 Ce plugin permet de produire un fichier de dépot de DOI au format XML à destination de l'organisme CROSSREF. Ce fichier peut être créé pour déclarer un numéro de revue complet ou pour un article isolé. Il est possible de choisir dans les paramètres le type d'entité que l'on souhaite moissonner (article, compte-rendu, etc.). Par défaut, seuls les articles le sont. 
 
 > **IMPORTANT** :  
-Le choix a été fait d'utiliser comme suffixe l'id d'enregistrement de l'article (ou du numéro) dans la base de données. Celui-ci est automatiquement ajouté à la base du DOI renseignée soit dans les options *Extra* de la maquette Nova (Préfixe des doi) soit en paramètre du plugin pour former le DOI complet de l'entité. Il est donc essentiel qu'il ne soit jamais modifié dès lors que le DOI est déclaré. En cas de modification ultérieure apportée au contenu de l'article, il ne faudra surtout pas procéder par une suppression suivie d'un nouvel ajout du document pour le mettre à jour mais simplement utiliser la fonction de Lodel *Recharger le document*.
+Le choix a été fait d'utiliser comme suffixe l'id d'enregistrement de l'article (ou du numéro) dans la base de données. Celui-ci est automatiquement ajouté au préfixe du doi renseigné en paramètre du plugin pour former le DOI complet de l'entité. Il est donc essentiel qu'il ne soit jamais modifié dès lors que le DOI est déclaré. En cas de modification ultérieure apportée au contenu de l'article, il ne faudra surtout pas procéder par une suppression suivie d'un nouvel ajout du document pour le mettre à jour mais simplement utiliser la fonction de Lodel *Recharger le document*.
 
 ## Prérequis
 - Lodel 1.0
