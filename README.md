@@ -12,6 +12,8 @@ Dans le répertoire `share/plugins/custom/` de votre installation, dézippez l'a
 git clone https://github.com/oliviercrouzet/doicooker/.git
 ```
 ## Activation
+> Le niveau _Administrateur Lodel_ est requis pour l'activation et la configuration décrite dans cette section.
+
 Accédez à l'administration des plugins de votre installation lodel (Administrer/Plugins).  
 > url =>  `https://votreinstallation/lodeladmin/index.php?do=list&lo=mainplugins`  
 
@@ -22,12 +24,10 @@ Ces paramètres sont éditables via le lien *Configurer*.
   * Si, on clique sur *Activer*, le plugin est installé mais pas activé (oui, c'est un rien contre-intuitif !). Sur chaque site, on retrouve le plugin dans le tableau des plugins (Administration/Plugins).
 
 On peut, si nécessaire, modifier les paramètres au niveau du site en cliquant sur *Configurer* . L'astérisque indique que le champ est obligatoire.  
-Lorsque la maquette Nova est utilisée le préfixe DOI est cherché d'abord dans l'option *Extra/Préfixe des DOI*.   
-Sinon, il faut bien évidemment renseigner le paramètre *base du DOI*
 
 ## Usage
 
-Une fois le plugin activé sur un site, un lien apparait en édition de numéro ou d'article dans l'encadré *Fonctions.* 
+Une fois le plugin activé sur un site, et dans la mesure où l'utilisateur dispose des permissions suffisantes définies dans le paramètre _Droits utilisateurs_ de la config, un lien apparait en édition de numéro ou d'article dans l'encadré *Fonctions.* 
 
    * Le lien *Afficher* permet de donner une vue indentée et facilement lisible à la sortie xml afin de vérifier si tout est correct.
     A noter que, si une extension de type blocage de publicité est installée sur votre navigateur, il vous faudra la désactiver ou placer l'url du site sur liste blanche afin que l'indentation puisse s'appliquer.
