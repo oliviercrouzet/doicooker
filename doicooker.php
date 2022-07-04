@@ -9,13 +9,13 @@ class DoiCooker extends Plugins
 
     public function postview(&$context)
     {
-        
-        if (isset($context['view']['base_rep']['doi'])  && $context['lodeluser']['adminlodel'] == '1') {
+        $pluginrights = isset($this->_config['userrights']['value']) ? $this->_config['userrights']['value']:128;
+        if (isset($context['view']['base_rep']['doi']) &&  $context['lodeluser']['rights'] >= $pluginrights) {
             // workaround pour ajouter la balise body qui autrement fait planter le parsing
             View::$page = preg_replace('/(<journal>.*?<\/journal>)/s',"<body>$1</body>",View::$page);
 
         }
-        if ($context['view']['tpl'] == 'edit_entities_edition' && $context['lodeluser']['adminlodel'] == '1') {
+        if ($context['view']['tpl'] == 'edit_entities_edition' && $context['lodeluser']['rights'] >= $pluginrights) {
             $id = $context['id'];
             $type =$context['type']['type'];
             
