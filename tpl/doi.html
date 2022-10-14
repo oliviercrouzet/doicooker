@@ -21,6 +21,7 @@
         </depositor>
         <registrant>[#OPTIONS.METADONNEESSITE.TITRESITE|textebrut]</registrant>
     </head>
+    <LET VAR="doi_base"><IF COND="[#DOI.PREFIX] LIKE /^[\d.]+\/$/">[#DOI.PREFIX][#SITE].<ELSE/>[#DOI.PREFIX]</IF></LET>
     <journal>
         <journal_metadata language="fr">
             <full_title>[#OPTIONS.METADONNEESSITE.TITRESITE|textebrut]</full_title>
@@ -34,7 +35,7 @@
               <issn media_type="print">[#OPTIONS.METADONNEESSITE.ISSN]</issn>
             </IF>
             <doi_data>
-                <doi>[#DOI.PREFIX|substr(0,-1)]</doi>
+                <doi>[#DOI_BASE|rtrim('.')]</doi>
                 <resource>[%SITEURL]</resource>
             </doi_data>
         </journal_metadata>
