@@ -18,7 +18,7 @@
                 <issue>[#ISSUE_NUMERO]</issue>
             </IF>
             <doi_data>
-                <doi>[#DOI.PREFIX][#ISSUE_ID]</doi>
+                <doi>[#DOI_BASE][#ISSUE_ID]</doi>
                 <resource>[%SITEURL]/index.php?id=[#ISSUE_ID]</resource>
             </doi_data>
         </journal_issue>
@@ -58,7 +58,7 @@
                     </pages>
                 </IF>
                 <doi_data>
-                    <doi>[#DOI.PREFIX][#TEXTE_ID]</doi>
+                    <doi>[#DOI_BASE][#TEXTE_ID]</doi>
                     <resource>[%SITEURL]/index.php?id=[#TEXTE_ID]</resource>
                 </doi_data>
             </journal_article>
