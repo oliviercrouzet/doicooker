@@ -6,8 +6,7 @@
 ?>
 <IF COND="[#DOWNLOAD]">
 <?php
-    $base =  $context['options']['nova']['prefixedoi'] ?: $context['doi']['prefix'];
-    $prefix = strtok($base,'/');    
+    $prefix = strtok($context['doi']['prefix'],'/');
     $filename = $prefix.'-'.$context['site'].'-'.$context['id'].'.xml';
     header("Content-Disposition: attachment;filename=$filename");
 ?>
