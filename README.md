@@ -6,6 +6,7 @@ Le choix a été fait d'utiliser comme suffixe l'id d'enregistrement de l'articl
 
 ## Prérequis
 - Lodel 1.0
+- Modèle éditorial >= 1.0.0
 ## Installation
 Dans le répertoire `share/plugins/custom/` de votre installation, dézippez l'archive du plugin ou clonez le dépôt :
 ```
