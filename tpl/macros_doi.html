@@ -30,9 +30,10 @@
         <journal_article publication_type="full_text" language="[#LANGUE]">
                 <FUNC NAME="TITLES" TITLE="[#TITRE]" ENTID="[TEXTE_ID]" SUBTITLE="[#SOUSTITRE]" ALTERTITLE="[#ALTERTITRE]" />
             <contributors>
-                <LOOP NAME="getAuthors" TABLE="auteurs" SELECT="nomfamille,prenom" WHERE="iddocument='[#TEXTE_ID]'" ORDER="degree">
+                <LOOP NAME="getAuthors" TABLE="auteurs" SELECT="type,nomfamille,prenom" WHERE="iddocument='[#TEXTE_ID]'" ORDER="degree">
                 <DO>
-                    <person_name sequence="first" contributor_role="author">
+                    <LET VAR="role"><IF COND="[#TYPE] eq 'traducteur'">translator<ELSE/>author</IF></LET>
+                    <person_name sequence="first" contributor_role="[#ROLE]">
                         <given_name>[#PRENOM]</given_name>
                         <surname>[#NOMFAMILLE]</surname>
                     </person_name>
