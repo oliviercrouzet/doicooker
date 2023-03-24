@@ -3,7 +3,9 @@
 <DEFMACRO NAME="JOURNAL_ISSUE">
         <journal_issue>
             <FUNC NAME="TITLES" TITLE="[#ISSUE_TITRE]" ENTID="[TEXTE_ID]" SUBTITLE="[#ISSUE_SOUSTITRE]" ALTERTITLE="[#ISSUE_ALTERTITRE]"/>
-            <LET VAR="onlinedate"><IF COND="[#ISSUE_DATEPUBLI]">[#ISSUE_DATEPUBLI]<ELSE/>[#ISSUE_DATEMISENLIGNE]</IF></LET>
+            <LET VAR="onlinedate">
+                <IF COND="[#CHECKDATEPUBLI] OR ![#ISSUE_DATEMISENLIGNE]">[#ISSUE_DATEPUBLI]<ELSE/>[#ISSUE_DATEMISENLIGNE]</IF>
+            </LET>
             <FUNC NAME="PUBLIDATE" DATE="[#ONLINEDATE]" MEDIUM="online" />
             <IF COND="[#ISSUE_DATEPUBLIPAPIER]  AND [#ISSUE_DATEPUBLIPAPIER] NE '0000-00-00' AND [#ISSUE_DATEPUBLIPAPIER] NE NULL">
                 <FUNC NAME="PUBLIDATE" DATE="[#ISSUE_DATEPUBLIPAPIER]" MEDIUM="print" />
@@ -45,7 +47,9 @@
                     <jats:abstract xml:lang="[#VALUE]"><jats:p>[#RESUME:#VALUE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</jats:p></jats:abstract>
                     </LOOP>
                 </IF>
-                <LET VAR="onlinedate"><IF COND="[#DATEPUBLI]">[#DATEPUBLI]<ELSE/>[#DATEMISENLIGNE]</IF></LET>
+                <LET VAR="onlinedate">
+                    <IF COND="[#CHECKDATEPUBLI] OR ![#DATEMISENLIGNE]">[#DATEPUBLI]<ELSE/>[#DATEMISENLIGNE]</IF>
+                </LET>
                 <FUNC NAME="PUBLIDATE" DATE="[#ONLINEDATE]" MEDIUM="online"/>
                 <IF COND="[#DATEPUBLIPAPIER] AND [#DATEPUBLIPAPIER] NE '0000-00-00' AND [#DATEPUBLIPAPIER] NE NULL">
                    <FUNC NAME="PUBLIDATE" DATE="[#DATEPUBLIPAPIER]" MEDIUM="print" />
