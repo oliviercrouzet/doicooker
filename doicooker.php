@@ -24,8 +24,22 @@ class DoiCooker extends Plugins
             if (! preg_match("/$type/",$harvested.'numero')) return;
 
             $url = './?do=_doicooker_cook&amp;type='.$type.'&amp;id='.$id;
-            $buttons = '<li style="padding-left:40%"><a href='.$url.'>Afficher</a>&nbsp;|&nbsp;<a href="'.$url.'&amp;download=1">Télécharger</a></li>';
-            View::$page = preg_replace('/(<h4>Fonctions<\/h4>.*?)(<\/ul>\s*<\/div>)/s','$1<li>Produire un fichier de dépôt DOI (xml) :</li>'.$buttons.'$2',View::$page);
+            $script = "<script>
+                const xmllinks = document.querySelectorAll('.doi');
+                xmllinks.forEach(function(link) {
+                    link.addEventListener('click',function() {
+                        if (document.querySelector('#datedoi').checked) this.setAttribute('href',this.getAttribute('href') + '&checkdatepubli=1');
+                        else this.setAttribute('href',this.getAttribute('href').replace('&checkdatepubli=1',''));
+                    },false);
+                });
+            </script>";
+            $htmlfunc = '<li>Produire un fichier de dépôt DOI (xml) :</li>';
+            $htmlfunc .= '<li style="padding-left:4%;margin-top:-3px;color:grey">';
+            $htmlfunc .= '<label>date de publ. = date de la publ. électronique</label><input id="datedoi" type="checkbox"></li>';
+            $htmlfunc .= '<li style="padding-left:4%;margin-top:-3px">';
+            $htmlfunc .= '<a class="doi" href='.$url.'>Afficher</a>&nbsp;|&nbsp;<a class="doi" href="'.$url.'&amp;download=1">Télécharger</a></li>';
+
+            View::$page = preg_replace('/(<div class="advancedFunc">.*?<h4>Fonctions<\/h4>.*?)(<\/ul>\s*<\/div>)/s','$1'.$htmlfunc.'$2'.$script,View::$page);
         }
     }
 
