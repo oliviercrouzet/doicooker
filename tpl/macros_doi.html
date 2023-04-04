@@ -61,9 +61,35 @@
                         <IF COND="[#PAGES.1]"><last_page>[#PAGES.1]</last_page></IF>
                     </pages>
                 </IF>
+                <!--[ pour les sites tel Alyoda le type article, utilisé dans les numéros spéciaux, doit être traité classiquement ]-->
+                <IF COND="[#OPTIONS.EXTRA.ME_SITEJURIDIQUE] AND [#TYPE] NE 'article'">
+                    <program xmlns="http://www.crossref.org/relations.xsd">
+                        <related_item>
+                            <description>Legal decision description of which this document is a commentary</description>
+                            <inter_work_relation relationship-type="isCommentOn" identifier-type="handle">
+                                <LOOP NAME="getparenttitle" SELECT="g_title" TABLE="entities" WHERE="id=[#IDPARENT]">[#G_TITLE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</LOOP>
+                            </inter_work_relation>
+                        </related_item>
+                        <LOOP NAME="getsiblings"  TABLE="entities,types" SELECT="entities.id as relatedid"
+                            WHERE="idparent=[#IDPARENT] AND entities.id != [#TEXTE_ID]"
+                            WHERE="entities.idtype=types.id and types.type in ([#DOI.HARVESTEDTYPES])">
+                            <DO>
+                                <related_item>
+                                    <description>Other comment about the same court decision</description>
+                                    <inter_work_relation relationship-type="isRelatedMaterial" identifier-type="doi">[#DOI_BASE][#RELATEDID]</inter_work_relation>
+                                </related_item>
+                            </DO>
+                        </LOOP>
+                    </program>
+                </IF>
                 <doi_data>
                     <doi>[#DOI_BASE][#TEXTE_ID]</doi>
-                    <resource>[%SITEURL]/index.php?id=[#TEXTE_ID]</resource>
+                    <!--[ pour les sites tel Alyoda le type article doit avoir une url classique ]-->
+                    <IF COND="[#OPTIONS.EXTRA.ME_SITEJURIDIQUE] AND [#TYPE] NE 'article'">
+                        <resource>[%SITEURL]/index.php?id=[#IDPARENT]#[#TEXTE_ID]</resource>
+                    <ELSE />
+                        <resource>[%SITEURL]/index.php?id=[#TEXTE_ID]</resource>
+                    </IF>
                 </doi_data>
             </journal_article>
     </IF>
