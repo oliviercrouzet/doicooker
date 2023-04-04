@@ -11,5 +11,6 @@
         <param name="depositor" title="Editeur institutionnel (Depositor)" type="text" allowedValues="" defaultValue="" required="true"/>
         <param name="email" title="Email" type="text" allowedValues="" defaultValue="" required="true"/>
         <param name="harvestedtypes" title="Type de texte à moissonner (séparateur = virgule)" type="text" allowedValues="" defaultValue="article" required="true"/>
+        <param name="license" title="Code de licence CC (exemple : CC BY-NC 4.0)" type="text" allowedValues="" defaultValue="" required="false"/>
     </parameters>
 </LodelPlugin>

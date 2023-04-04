@@ -50,6 +50,7 @@ class DoiCooker extends Plugins
         C::set('doi.prefix', $this->_config['prefix']['value']);
         C::set('doi.depositor', $this->_config['depositor']['value']);
         C::set('doi.email', $this->_config['email']['value']);
+        C::set('doi.license', $this->_config['license']['value']);
 
         $harvested = preg_replace('/([a-z]+)/',"'$1'",$this->_config['harvestedtypes']['value']);
         C::set('doi.harvestedtypes', $harvested);

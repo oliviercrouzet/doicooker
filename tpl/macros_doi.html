@@ -82,6 +82,12 @@
                         </LOOP>
                     </program>
                 </IF>
+                <IF COND="[#DOI.LICENSE] LIKE /^\s*CC BY(-[A-Z]{2}){0,2} \d\.\d\s*$/">
+                    <LET ARRAY="LICENSE">[#DOI.LICENSE|trim()|strtolower()|lexplode(' ')]</LET>
+                    <ai:program name="AccessIndicators">
+                        <ai:license_ref>https://creativecommons.org/licenses/[#LICENSE.1]/[#LICENSE.2]/</ai:license_ref>
+                    </ai:program>
+                </IF>
                 <doi_data>
                     <doi>[#DOI_BASE][#TEXTE_ID]</doi>
                     <!--[ pour les sites tel Alyoda le type article doit avoir une url classique ]-->
