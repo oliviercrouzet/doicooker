@@ -22,9 +22,6 @@
         <registrant>[#OPTIONS.METADONNEESSITE.TITRESITE|textebrut]</registrant>
     </head>
 
-    <IF COND="[#OPTIONS.EXTRA.ME_SITEJURIDIQUE]">
-        <LET VAR="siteurl">[#OPTIONS.METADONNEESSITE.URLDUSITE]</LET>
-    </IF>
     <LET VAR="doi_base"><IF COND="[#DOI.PREFIX] LIKE /^[\d.]+\/$/">[#DOI.PREFIX][#SITE].<ELSE/>[#DOI.PREFIX]</IF></LET>
     <journal>
         <journal_metadata language="fr">

@@ -66,9 +66,7 @@
                     <program xmlns="http://www.crossref.org/relations.xsd">
                         <related_item>
                             <description>Legal decision description of which this document is a commentary</description>
-                            <inter_work_relation relationship-type="isCommentOn" identifier-type="handle">
-                                <LOOP NAME="getparenttitle" SELECT="g_title" TABLE="entities" WHERE="id=[#IDPARENT]">[#G_TITLE|removenotes|textebrut|cleanBadChars|replacequotationmark|trim]</LOOP>
-                            </inter_work_relation>
+                            <inter_work_relation relationship-type="isCommentOn" identifier-type="uri">[%SITEURL]/index.php?id=[#IDPARENT]</inter_work_relation>
                         </related_item>
                         <LOOP NAME="getsiblings"  TABLE="entities,types" SELECT="entities.id as relatedid"
                             WHERE="idparent=[#IDPARENT] AND entities.id != [#TEXTE_ID]"
