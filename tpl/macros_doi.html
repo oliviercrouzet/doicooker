@@ -4,12 +4,10 @@
         <journal_issue>
             <FUNC NAME="TITLES" TITLE="[#ISSUE_TITRE]" ENTID="[TEXTE_ID]" SUBTITLE="[#ISSUE_SOUSTITRE]" ALTERTITLE="[#ISSUE_ALTERTITRE]"/>
             <LET VAR="onlinedate">
-                <IF COND="[#CHECKDATEPUBLI] OR ![#ISSUE_DATEMISENLIGNE]">[#ISSUE_DATEPUBLI]<ELSE/>[#ISSUE_DATEMISENLIGNE]</IF>
+                <IF COND="[#CHECKDATEPUBLI] OR ![#ISSUE_DATEMISENLIGNE] OR [#ISSUE_DATEMISENLIGNE] LIKE /0000-00-00/ OR [#ISSUE_DATEMISENLIGNE] EQ NULL">[#ISSUE_DATEPUBLI]<ELSE/>[#ISSUE_DATEMISENLIGNE]</IF>
             </LET>
             <FUNC NAME="PUBLIDATE" DATE="[#ONLINEDATE]" MEDIUM="online" />
-            <IF COND="[#ISSUE_DATEPUBLIPAPIER]  AND [#ISSUE_DATEPUBLIPAPIER] NE '0000-00-00' AND [#ISSUE_DATEPUBLIPAPIER] NE NULL">
-                <FUNC NAME="PUBLIDATE" DATE="[#ISSUE_DATEPUBLIPAPIER]" MEDIUM="print" />
-            </IF>
+            <FUNC NAME="PUBLIDATE" DATE="[#ISSUE_DATEPUBLIPAPIER]" MEDIUM="print" />
             <LET VAR="publishingmode">
                 <LOOP NAME="getIdentifier" SELECT="identifier" TABLE="relations,entities" 
                     WHERE="relations.id1=entities.id AND relations.id2=[#ISSUE_ID] AND nature='P' AND degree='1'">[#IDENTIFIER]</LOOP>
@@ -48,12 +46,10 @@
                     </LOOP>
                 </IF>
                 <LET VAR="onlinedate">
-                    <IF COND="[#CHECKDATEPUBLI] OR ![#DATEMISENLIGNE]">[#DATEPUBLI]<ELSE/>[#DATEMISENLIGNE]</IF>
+                    <IF COND="[#CHECKDATEPUBLI] OR ![#DATEMISENLIGNE] OR [#DATEMISENLIGNE] LIKE /0000-00-00/ OR [#DATEMISENLIGNE] EQ NULL">[#DATEPUBLI]<ELSE/>[#DATEMISENLIGNE]</IF>
                 </LET>
                 <FUNC NAME="PUBLIDATE" DATE="[#ONLINEDATE]" MEDIUM="online"/>
-                <IF COND="[#DATEPUBLIPAPIER] AND [#DATEPUBLIPAPIER] NE '0000-00-00' AND [#DATEPUBLIPAPIER] NE NULL">
-                   <FUNC NAME="PUBLIDATE" DATE="[#DATEPUBLIPAPIER]" MEDIUM="print" />
-                </IF>
+                <FUNC NAME="PUBLIDATE" DATE="[#DATEPUBLIPAPIER]" MEDIUM="print" />
                 <IF COND="[#PAGINATION]">
                     <LET ARRAY="pages">[#PAGINATION|lexplode('-')]</LET>
                     <pages>
@@ -68,18 +64,15 @@
             </journal_article>
     </IF>
 </DEFMACRO>
-<DEFFUNC NAME="PUBLIDATE" REQUIRED="medium" OPTIONAL="date">
-    <publication_date media_type="[#MEDIUM]">
-        <IF COND="[#DATE] AND [#DATE] NE '0000-00-00' AND [#DATE] NE NULL">
-             <LET ARRAY="DATEPARTS">[#DATE|lexplode('-')]</LET>
-        <ELSE/>
-            <LET VAR="DATE"><?php echo date("Y-m-d");?></LET>
-            <LET ARRAY="DATEPARTS">[#DATE|lexplode('-')]</LET>
-        </IF>
-        <month>[#DATEPARTS.1]</month>
-        <day>[#DATEPARTS.2]</day>
-        <year>[#DATEPARTS.0]</year>
-    </publication_date>
+<DEFFUNC NAME="PUBLIDATE" REQUIRED="medium, date">
+    <IF COND="[#DATE] AND ! [#DATE] LIKE /0000-00-00/ AND [#DATE] NE NULL">
+        <publication_date media_type="[#MEDIUM]">
+            <LET ARRAY="DATEPARTS">[#DATE|trim|lexplode('-')]</LET>
+            <month>[#DATEPARTS.1]</month>
+            <day>[#DATEPARTS.2]</day>
+            <year>[#DATEPARTS.0]</year>
+        </publication_date>
+    </IF>
 </DEFFUNC>
 <DEFFUNC NAME="TITLES" REQUIRED="title, entid" OPTIONAL="subtitle, altertitle">
     <IF COND="![#ALTERTITLE]"/>
