@@ -51,7 +51,7 @@
                 <FUNC NAME="PUBLIDATE" DATE="[#ONLINEDATE]" MEDIUM="online"/>
                 <FUNC NAME="PUBLIDATE" DATE="[#DATEPUBLIPAPIER]" MEDIUM="print" />
                 <IF COND="[#PAGINATION]">
-                    <LET ARRAY="pages">[#PAGINATION|lexplode('-')]</LET>
+                    <LET ARRAY="pages">[#PAGINATION|trim|lexplode('-')]</LET>
                     <pages>
                         <first_page>[#PAGES.0]</first_page>
                         <IF COND="[#PAGES.1]"><last_page>[#PAGES.1]</last_page></IF>
