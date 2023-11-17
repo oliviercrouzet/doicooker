@@ -59,22 +59,22 @@
                 </IF>
                 <!--[ pour les sites jurinotice, la mention de relation ne doit toucher que les documents enfants ]-->
                 <IF COND="[#OPTIONS.EXTRA.ME_SITEJURIDIQUE] AND [#TYPE] NE 'article' AND [#TYPE] NE 'noticejuridique'">
-                    <program xmlns="http://www.crossref.org/relations.xsd">
-                        <related_item>
-                            <description>Legal decision description of which this document is a commentary</description>
-                            <inter_work_relation relationship-type="isCommentOn" identifier-type="uri">[%SITEURL]/index.php?id=[#IDPARENT]</inter_work_relation>
-                        </related_item>
+                    <rel:program>
+                        <rel:related_item>
+                            <rel:description>Legal decision description of which this document is a commentary</rel:description>
+                            <rel:inter_work_relation relationship-type="isCommentOn" identifier-type="uri">[%SITEURL]/index.php?id=[#IDPARENT]</rel:inter_work_relation>
+                        </rel:related_item>
                         <LOOP NAME="getsiblings"  TABLE="entities,types" SELECT="entities.id as relatedid"
                             WHERE="idparent=[#IDPARENT] AND entities.id != [#TEXTE_ID]"
                             WHERE="entities.idtype=types.id and types.type in ([#DOI.HARVESTEDTYPES])">
                             <DO>
-                                <related_item>
-                                    <description>Other comment about the same court decision</description>
-                                    <inter_work_relation relationship-type="isRelatedMaterial" identifier-type="doi">[#DOI_BASE][#RELATEDID]</inter_work_relation>
-                                </related_item>
+                                <rel:related_item>
+                                    <rel:description>Other comment about the same court decision</rel:description>
+                                    <rel:inter_work_relation relationship-type="isRelatedMaterial" identifier-type="doi">[#DOI_BASE][#RELATEDID]</rel:inter_work_relation>
+                                </rel:related_item>
                             </DO>
                         </LOOP>
-                    </program>
+                    </rel:program>
                 </IF>
                 <IF COND="[#DOI.LICENSE] LIKE /^\s*CC BY(-[A-Z]{2}){0,2} \d\.\d\s*$/">
                     <LET ARRAY="LICENSE">[#DOI.LICENSE|trim()|strtolower()|lexplode(' ')]</LET>
@@ -167,4 +167,3 @@
         </IF>
    </IF>
 </DEFFUNC>
-
