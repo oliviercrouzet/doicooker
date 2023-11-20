@@ -75,6 +75,24 @@
                             </DO>
                         </LOOP>
                     </rel:program>
+                <!--[ s'applique aux sites jurinova juriarticle basé sur article + décisions ]-->
+                <ELSEIF COND="[#OPTIONS.EXTRA.ME_SITEJURIDIQUE]">
+                    <LOOP NAME="getdecisions" SELECT="g_name as juridictions,chambre,numero,date" TABLE="decisions,entities,relations,entries,entrytypes" WHERE="decisions.identity=entities.id AND entities.idparent='[#TEXTE_ID]' AND relations.id1=entities.id AND entries.id=relations.id2 AND entries.idtype=entrytypes.id AND entrytypes.type in('juridictions','codepublication')" GROUPBY="relations.id1">
+                        <BEFORE>
+                        <rel:program>
+                        </BEFORE>
+                        <DO>
+                            <rel:related_item>
+                                <rel:description>Reference of the legal decision of which this document is a commentary</rel:description>
+                                <rel:inter_work_relation relationship-type="isCommentOn" identifier-type="other">
+                                    <MACRO NAME="DECISION_TITLE" />
+                                </rel:inter_work_relation>
+                            </rel:related_item>
+                        </DO>
+                        <AFTER>
+                        </rel:program>
+                        </AFTER>
+                    </LOOP>
                 </IF>
                 <IF COND="[#DOI.LICENSE] LIKE /^\s*CC BY(-[A-Z]{2}){0,2} \d\.\d\s*$/">
                     <LET ARRAY="LICENSE">[#DOI.LICENSE|trim()|strtolower()|lexplode(' ')]</LET>
@@ -167,3 +185,19 @@
         </IF>
    </IF>
 </DEFFUNC>
+<DEFMACRO NAME="DECISION_TITLE">
+    <LET ARRAY="decision_title_parts"></LET>
+    <IF COND="[#JURIDICTIONS]">
+        <LET ARRAY="decision_title_parts[]">[#JURIDICTIONS|textebrut|trim]<IF COND="[#CHAMBRE]">, [#CHAMBRE|textebrut]</IF></LET>
+    </IF>
+    <IF COND="[#NUMERO]">
+        <LET ARRAY="decision_title_parts[]">n&#xb0; [#NUMERO|textebrut]</LET>
+    </IF>
+    <IF COND="[#PARTIE]">
+        <LET ARRAY="decision_title_parts[]">[#PARTIE|textebrut]</LET>
+    </IF>
+    <IF COND="[#DATE|isadate] AND [#DATE] NE '0000-00-00' AND [#DATE] NE NULL">
+        <LET ARRAY="decision_title_parts[]">[#DATE|formateddate("%d/%m/%Y")]</LET>
+    </IF>
+    [#DECISION_TITLE_PARTS|join(', ')]
+</DEFMACRO>
