@@ -57,8 +57,8 @@
                         <IF COND="[#PAGES.1]"><last_page>[#PAGES.1]</last_page></IF>
                     </pages>
                 </IF>
-                <!--[ pour les sites tel Alyoda le type article, utilisé dans les numéros spéciaux, doit être traité classiquement ]-->
-                <IF COND="[#OPTIONS.EXTRA.ME_SITEJURIDIQUE] AND [#TYPE] NE 'article'">
+                <!--[ pour les sites jurinotice, la mention de relation ne doit toucher que les documents enfants ]-->
+                <IF COND="[#OPTIONS.EXTRA.ME_SITEJURIDIQUE] AND [#TYPE] NE 'article' AND [#TYPE] NE 'noticejuridique'">
                     <program xmlns="http://www.crossref.org/relations.xsd">
                         <related_item>
                             <description>Legal decision description of which this document is a commentary</description>
@@ -84,8 +84,8 @@
                 </IF>
                 <doi_data>
                     <doi>[#DOI_BASE][#TEXTE_ID]</doi>
-                    <!--[ pour les sites tel Alyoda le type article doit avoir une url classique ]-->
-                    <IF COND="[#OPTIONS.EXTRA.ME_SITEJURIDIQUE] AND [#TYPE] NE 'article'">
+                    <!--[ pour les sites jurinotices, l'id du document enfant est ajouté comme ancre ]-->
+                    <IF COND="[#OPTIONS.EXTRA.ME_SITEJURIDIQUE] AND [#TYPE] NE 'article' AND [#TYPE] NE 'noticejuridique'">
                         <resource>[%SITEURL]/index.php?id=[#IDPARENT]#[#TEXTE_ID]</resource>
                     <ELSE />
                         <resource>[%SITEURL]/index.php?id=[#TEXTE_ID]</resource>
