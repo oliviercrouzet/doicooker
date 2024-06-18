@@ -12,7 +12,7 @@ Le choix a été fait d'utiliser comme suffixe l'id d'enregistrement de l'articl
 ## Installation
 Dans le répertoire `share/plugins/custom/` de votre installation, dézippez l'archive du plugin ou clonez le dépôt :
 ```
-git clone https://github.com/oliviercrouzet/doicooker/.git
+git clone https://github.com/oliviercrouzet/doicooker.git
 ```
 ## Activation
 > Le niveau _Administrateur Lodel_ est requis pour l'activation et la configuration décrite dans cette section.
