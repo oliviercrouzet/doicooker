@@ -94,12 +94,7 @@
                         </AFTER>
                     </LOOP>
                 </IF>
-                <IF COND="[#DOI.LICENSE] LIKE /^\s*CC BY(-[A-Z]{2}){0,2} \d\.\d\s*$/">
-                    <LET ARRAY="LICENSE">[#DOI.LICENSE|trim()|strtolower()|lexplode(' ')]</LET>
-                    <ai:program name="AccessIndicators">
-                        <ai:license_ref>https://creativecommons.org/licenses/[#LICENSE.1]/[#LICENSE.2]/</ai:license_ref>
-                    </ai:program>
-                </IF>
+                <MACRO NAME="CHECK_LICENSE" />
                 <doi_data>
                     <doi>[#DOI_BASE][#TEXTE_ID]</doi>
                     <!--[ pour les sites jurinotices, l'id du document enfant est ajouté comme ancre ]-->
@@ -200,4 +195,30 @@
         <LET ARRAY="decision_title_parts[]">[#DATE|formateddate("%d/%m/%Y")]</LET>
     </IF>
     [#DECISION_TITLE_PARTS|join(', ')]
+</DEFMACRO>
+
+/**
+ * la licence n'est affichée que si le paramètre Code de licence du plugin est renseigné (avec une licence de type CC)
+ * On affiche la licence particulière à l'article si elle existe et si son format est correct
+ * Sinon on recourt à la licence entrée en paramètre.
+ */
+<DEFMACRO NAME="CHECK_LICENSE">
+    <IF COND="[#DOI.LICENSE] LIKE /^\s*CC BY(-[A-Z]{2}){0,2} \d\.\d\s*$/">
+        <LOOP NAME="license" SELECT="indexavances.*" TABLE="indexavances" WHERE="iddocument = [#ID] AND type='licence'">
+            <DO>
+                <IF COND="[#NOM] LIKE /^\s*CC BY(-[A-Z]{2}){0,2} \d\.\d\s*$/">
+                    <LET ARRAY="LICENSE">[#NOM|trim()|strtolower()|lexplode(' ')]</LET>
+                    <ai:program name="AccessIndicators">
+                        <ai:license_ref>https://creativecommons.org/licenses/[#LICENSE.1]/[#LICENSE.2]/</ai:license_ref>
+                    </ai:program>
+                </IF>
+            </DO>
+            <ALTERNATIVE>
+                <LET ARRAY="LICENSE">[#DOI.LICENSE|trim()|strtolower()|lexplode(' ')]</LET>
+                <ai:program name="AccessIndicators">
+                    <ai:license_ref>https://creativecommons.org/licenses/[#LICENSE.1]/[#LICENSE.2]/</ai:license_ref>
+                </ai:program>
+            </ALTERNATIVE>
+        </LOOP>
+    </IF>
 </DEFMACRO>
