@@ -55,6 +55,13 @@ class DoiCooker extends Plugins
         $harvested = preg_replace('/([a-z]+)/',"'$1'",$this->_config['harvestedtypes']['value']);
         C::set('doi.harvestedtypes', $harvested);
 
+        // work-around pour mois littéral compatible avec lodel + php7.3 ou php8.2
+        $literalmonths = [
+            '01' => 'janvier','02' => 'février','03' => 'mars','04' => 'avril','05' => 'mai','06' => 'juin',
+            '07' => 'juillet','08' =>'août','09' => 'septembre','10' => 'octobre','11' => 'novembre','12' => 'décembre'
+        ];
+        C::set('literalmonths', $literalmonths);
+
         View::getView()->render('doi');
         return _ajax;
         

@@ -84,9 +84,7 @@
                         <DO>
                             <rel:related_item>
                                 <rel:description>Reference of the legal decision of which this document is a commentary</rel:description>
-                                <rel:inter_work_relation relationship-type="isCommentOn" identifier-type="other">
-                                    <MACRO NAME="DECISION_TITLE" />
-                                </rel:inter_work_relation>
+                                <rel:inter_work_relation relationship-type="isCommentOn" identifier-type="other"><MACRO NAME="DECISION_TITLE" /></rel:inter_work_relation>
                             </rel:related_item>
                         </DO>
                         <AFTER>
@@ -180,22 +178,6 @@
         </IF>
    </IF>
 </DEFFUNC>
-<DEFMACRO NAME="DECISION_TITLE">
-    <LET ARRAY="decision_title_parts"></LET>
-    <IF COND="[#JURIDICTIONS]">
-        <LET ARRAY="decision_title_parts[]">[#JURIDICTIONS|textebrut|trim]<IF COND="[#CHAMBRE]">, [#CHAMBRE|textebrut]</IF></LET>
-    </IF>
-    <IF COND="[#NUMERO]">
-        <LET ARRAY="decision_title_parts[]">n&#xb0; [#NUMERO|textebrut]</LET>
-    </IF>
-    <IF COND="[#PARTIE]">
-        <LET ARRAY="decision_title_parts[]">[#PARTIE|textebrut]</LET>
-    </IF>
-    <IF COND="[#DATE|isadate] AND [#DATE] NE '0000-00-00' AND [#DATE] NE NULL">
-        <LET ARRAY="decision_title_parts[]">[#DATE|formateddate("%d/%m/%Y")]</LET>
-    </IF>
-    [#DECISION_TITLE_PARTS|join(', ')]
-</DEFMACRO>
 
 /**
  * la licence n'est affichée que si le paramètre Code de licence du plugin est renseigné (avec une licence de type CC)
@@ -221,4 +203,22 @@
             </ALTERNATIVE>
         </LOOP>
     </IF>
+</DEFMACRO>
+
+/**
+ * Absence d'indentation à conserver : work-around pour éviter les espaces indésirables dans le tag inter_work_relation du fichier téléchargé
+ */
+<DEFMACRO NAME="DECISION_TITLE">
+<!--[ &#176; = ° ]--> 
+<IF COND="[#JURIDICTIONS]">[#JURIDICTIONS|textebrut|trim]<IF COND="[#CHAMBRE]">, [#CHAMBRE|textebrut]</IF></IF>
+<IF COND="[#NUMERO]"> - N&#176; [#NUMERO|textebrut]</IF>
+<IF COND="[#PARTIE]"> - [#PARTIE|textebrut]</IF>
+<IF COND="[#DATE|isadate]"> - <MACRO NAME="HUMANDATE" /></IF>
+<IF COND="[#CODEPUBLICATION]"> - [#CODEPUBLICATION|textebrut]</IF>
+</DEFMACRO>
+
+<DEFMACRO NAME="HUMANDATE">
+<LET ARRAY="DATEPARTS">[#DATE|trim|lexplode('-')]</LET>
+<LET VAR="numericmonth">[#DATEPARTS.1]</LET>
+[#DATEPARTS.2] [#LITERALMONTHS.#NUMERICMONTH] [#DATEPARTS.0]
 </DEFMACRO>
