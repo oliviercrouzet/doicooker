@@ -1,16 +1,6 @@
 <USE MACROFILE="macros_doi.html" />
 <LET VAR="guess_alter_subtitle" GLOBAL="1"></LET>
-<?php
-    header("Content-type: application/xml");
-    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-?>
-<IF COND="[#DOWNLOAD]">
-<?php
-    $prefix = strtok($context['doi']['prefix'],'/');
-    $filename = $prefix.'-'.$context['site'].'-'.$context['id'].'.xml';
-    header("Content-Disposition: attachment;filename=$filename");
-?>
-</IF>
+<?xml version="1.0" encoding="UTF-8"?>
 <doi_batch version="5.3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.crossref.org/schema/5.3.1" xsi:schemaLocation="http://www.crossref.org/schema/5.3.1  http://www.crossref.org/schemas/crossref5.3.1.xsd" xmlns:jats="http://www.ncbi.nlm.nih.gov/JATS1" xmlns:ai="http://www.crossref.org/AccessIndicators.xsd" xmlns:rel="http://www.crossref.org/relations.xsd">
     <head>
         <doi_batch_id>[#SITE]<?php echo date('YmdHis')?></doi_batch_id>
