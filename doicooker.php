@@ -4,24 +4,39 @@ class DoiCooker extends Plugins
 {
     // pas besoin d'initialiser quoique ce soit à l'activation/désactivation du plugin
     // il faut toutefois les déclarer pour respecter la cohérence avec la classe parente
-    public function enableAction(&$context, &$error) {}
-    public function disableAction(&$context, &$error) {}
+    public function enableAction(&$context, &$error) {
+        if(!parent::_checkRights(LEVEL_ADMINLODEL)) { return; }
+    }
+    public function disableAction(&$context, &$error) {
+        if(!parent::_checkRights(LEVEL_ADMINLODEL)) { return; }
+    }
 
     public function postview(&$context)
     {
-        $pluginrights = isset($this->_config['userrights']['value']) ? $this->_config['userrights']['value']:128;
-        if (isset($context['view']['base_rep']['doi']) &&  $context['lodeluser']['rights'] >= $pluginrights) {
-            // workaround pour ajouter la balise body qui autrement fait planter le parsing
-            View::$page = preg_replace('/(<journal>.*?<\/journal>)/s',"<body>$1</body>",View::$page);
+        $requestedlevel = $this->_config['userrights']['value'] ?? LEVEL_ADMINLODEL;
+        if (!parent::_checkRights($requestedlevel)) { return; }
 
+        if ($context['view']['tpl'] == 'doi' && isset($context['download'])) {
+            $domxml = new DOMDocument('1.0','UTF-8');
+            $domxml->preserveWhiteSpace = false;
+            $domxml->formatOutput = true;
+            $domxml->loadXML(View::$page);
+            $xml = $domxml->saveXML();
+            $prefix = strstr($context['doi']['prefix'],'/',true);
+            $filename = $prefix.'-'.$context['site'].'-'.$context['id'].'.xml';
+
+            header('Content-Disposition: attachment; filename='.$filename);
+            echo $xml;
+            exit;
         }
-        if ($context['view']['tpl'] == 'edit_entities_edition' && $context['lodeluser']['rights'] >= $pluginrights) {
+
+        if ($context['view']['tpl'] == 'edit_entities_edition') {
             $id = $context['id'];
             $type =$context['type']['type'];
-            
+
             // on n'affiche pas le lien pour un type de document qu'on ne souhaite pas moissonner
-            $harvested = $this->_config['harvestedtypes']['value']; 
-            if (! preg_match("/$type/",$harvested.'numero')) return;
+            $harvestedtypes = explode(',',$this->_config['harvestedtypes']['value']);
+            if (!in_array($type,array_merge($harvestedtypes, ['numero']))) { return; } // le type numero est moissonnable par défaut.
 
             $url = './?do=_doicooker_cook&amp;type='.$type.'&amp;id='.$id;
             $script = "<script>
@@ -50,13 +65,16 @@ class DoiCooker extends Plugins
         C::set('doi.prefix', $this->_config['prefix']['value']);
         C::set('doi.depositor', $this->_config['depositor']['value']);
         C::set('doi.email', $this->_config['email']['value']);
+        C::set('doi.license', $this->_config['license']['value']);
 
         $harvested = preg_replace('/([a-z]+)/',"'$1'",$this->_config['harvestedtypes']['value']);
         C::set('doi.harvestedtypes', $harvested);
 
+        header('Cache-Control: no-cache');
+        header('Content-Type: application/xml');
         View::getView()->render('doi');
-        return _ajax;
-        
+
+        return '_ajax';
     }
 
 }

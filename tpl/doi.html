@@ -1,16 +1,6 @@
 <USE MACROFILE="macros_doi.html" />
 <LET VAR="guess_alter_subtitle" GLOBAL="1"></LET>
-<?php
-    header("Content-type: application/xml");
-    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-?>
-<IF COND="[#DOWNLOAD]">
-<?php
-    $prefix = strtok($context['doi']['prefix'],'/');
-    $filename = $prefix.'-'.$context['site'].'-'.$context['id'].'.xml';
-    header("Content-Disposition: attachment;filename=$filename");
-?>
-</IF>
+<?xml version="1.0" encoding="UTF-8"?>
 <doi_batch version="5.3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.crossref.org/schema/5.3.1" xsi:schemaLocation="http://www.crossref.org/schema/5.3.1  http://www.crossref.org/schemas/crossref5.3.1.xsd" xmlns:jats="http://www.ncbi.nlm.nih.gov/JATS1">
     <head>
         <doi_batch_id>[#SITE]<?php echo date('YmdHis')?></doi_batch_id>
@@ -21,6 +11,7 @@
         </depositor>
         <registrant>[#OPTIONS.METADONNEESSITE.TITRESITE|textebrut]</registrant>
     </head>
+
     <LET VAR="doi_base"><IF COND="[#DOI.PREFIX] LIKE /^[\d.]+\/$/">[#DOI.PREFIX][#SITE].<ELSE/>[#DOI.PREFIX]</IF></LET>
     <journal>
         <journal_metadata language="fr">
@@ -48,7 +39,7 @@
             </DO>
             </LOOP> 
             <LOOP NAME="getChildrenTextData"
-             SELECT="textes.identity as texte_id,textes.titre,textes.altertitre,textes.soustitre,textes.langue,resume,pagination,textes.datepubli,textes.datepublipapier,textes.datemisenligne"
+             SELECT="textes.identity as texte_id,entities.idparent,textes.titre,textes.altertitre,textes.soustitre,textes.langue,resume,pagination,textes.datepubli,textes.datepublipapier,textes.datemisenligne"
              TABLE="textes,entities,relations,publications,types" 
              WHERE="textes.identity=entities.id AND entities.id=relations.id2 AND relations.id1=publications.identity AND entities.idtype=types.id" 
              WHERE="publications.identity='[#ID]' AND nature='P' AND types.type in ([#DOI.HARVESTEDTYPES])">
@@ -67,9 +58,9 @@
             </DO>
             </LOOP>
             <LOOP NAME="getTextData"
-             SELECT="identity as texte_id,titre,soustitre,langue,altertitre,resume,pagination,datepubli,datepublipapier,datemisenligne"
-             TABLE="textes" 
-             WHERE="identity=[#ID]">
+             SELECT="identity as texte_id,entities.idparent,titre,soustitre,langue,altertitre,resume,pagination,datepubli,datepublipapier,datemisenligne"
+             TABLE="textes,entities"
+             WHERE="identity=[#ID]  and identity=entities.id">
             <DO> 
             <MACRO NAME="JOURNAL_ARTICLE" />
             </DO>
